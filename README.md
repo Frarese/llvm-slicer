@@ -11,12 +11,11 @@ place where an assert is in the code).
   - `cmake -build`
 
 ###How To Run
-  - To get a mapping of binary to llvm-ir. This pass numbers the numbers the llvm-irs in a specific function (-mapping-function) and for each of them
-    specifies the info of the corresponding binary instruction.
+  - To get a mapping of binary to llvm-ir. This pass numbers the llvm-irs in a specific function (-mapping-function) and for each of them specifies the info of the corresponding binary mneumonics. This analysis pass used the metadata add by mcsema to infer this mapping.
     * `opt -load=LVMSlicer.so  -srcline-mapping -mapping-function=sub_8048420 -mapping-output=mapping.txt  simple.bc -o simple.analysed.bc` 
       * sub_8048420: The function we want to focus on.
-      * mapping.txt: The Output file with mapping. If not spediced the output will be dumed in stdout
-  -  From the previous mapping, choose a line number (say N) of the llvm-ir to be selected as the slicing criteria. **[Not Complete: Under Progress]
+      * mapping.txt: The Output file with mapping. If not specifed the output will be dumped in stdout
+  -  From the previous mapping, choose a line number (say N) of the llvm-ir to be selected as the static slicing criteria. __Not Complete: Under Progress__
     * `opt -load=LLVMSlicer.so  -mapping-function=sub_8048420 -criterion-line=N -create-hammock-cfg -slice-inter  example2.bc  -o example2.sliced.bc`
       * If -mapping-function and -criterion-line are omitted, the slicing criteria will be selected as an assert (if available).
 
