@@ -11,6 +11,10 @@ place where an assert is in the code).
   - `cmake -build`
 
 ###How To Run
+  - To get a mapping of binary to llvm-ir 
+    * `opt -load=LVMSlicer.so  -mapping-function=msub_8048420  -srcline-mapping -mapping-output=mapping.txt  simple.bc -o simple.analysed.bc 
+      * 
+
 Basically, what one needs to do to slice src.o LLVM code into dst.o is:
   $ opt -load LLVMSlicer.so -create-hammock-cfg -slice-inter src.o -o dst.o
 
