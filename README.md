@@ -11,30 +11,18 @@ place where an assert is in the code).
   - `cmake -build`
 
 ###How To Run
-  - To get a mapping of binary to llvm-ir 
-    * `opt -load=LVMSlicer.so  -mapping-function=msub_8048420  -srcline-mapping -mapping-output=mapping.txt  simple.bc -o simple.analysed.bc 
-      * 
+  - To get a mapping of binary to llvm-ir. This pass numbers the numbers the llvm-irs in a specific function (-mapping-function) and for each of them
+    specifies the info of the corresponding binary instruction.
+    * `opt -load=LVMSlicer.so  -srcline-mapping -mapping-function=sub_8048420 -mapping-output=mapping.txt  simple.bc -o simple.analysed.bc` 
+      * sub_8048420: The function we want to focus on.
+      * mapping.txt: The Output file with mapping. If not spediced the output will be dumed in stdout
+  -  From the previous mapping, choose a line number (say N) of the llvm-ir to be selected as the slicing criteria. **[Not Complete: Under Progress]
+    * `opt -load=LLVMSlicer.so  -mapping-function=sub_8048420 -criterion-line=N -create-hammock-cfg -slice-inter  example2.bc  -o example2.sliced.bc`
+      * If -mapping-function and -criterion-line are omitted, the slicing criteria will be selected as an assert (if available).
 
-Basically, what one needs to do to slice src.o LLVM code into dst.o is:
-  $ opt -load LLVMSlicer.so -create-hammock-cfg -slice-inter src.o -o dst.o
 
-Both create-hammock-cfg and slice-inter are defined in this project. If you are
-having troubles with running opt, you are likely not loading the proper library.
-Of course, you have to make sure that the library is in a path where dynamic
-libraries are looked for (or add the path where the library is to
-LD_LIBRARY_PATH).
 
-Bug reports
-===========
-Use github for reports and pull requests, please.
-
-Contacts
-========
+###Acknowledgement
+This worked is borrowed from 
 Jiri Slaby <jirislaby@gmail.com>
 https://github.com/jirislaby/LLVMSlicer
-
-References
-==========
-[1] M. Weiser. "Program slicing". Proceedings of the 5th International
-Conference on Software Engineering, pages 439–449, IEEE Computer Society Press,
-March 1981.
