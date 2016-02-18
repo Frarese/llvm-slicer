@@ -1,8 +1,8 @@
 #ifndef _SOURCELINEMAPPING_H
 #define _SOURCELINEMAPPING_H
 
-#include "llvm/IR/Instruction.h"
 #include "llvm/Pass.h"
+#include "llvm/IR/Instructions.h"
 
 namespace llvm {
 

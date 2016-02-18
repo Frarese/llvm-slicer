@@ -20,11 +20,14 @@
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/InstIterator.h"
 #include "llvm/Support/raw_os_ostream.h"
+#include "llvm/IR/Constants.h"
+
 
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
+#include<iomanip>
 
 using namespace llvm;
 
@@ -67,14 +70,18 @@ std::string SourceLineMappingPass::locateSrcInfo(Instruction *I) {
   if (MDNode *N = I->getMetadata("mcsema_real_eip")) {
     ++NumFoundSrc;
 
-    Value *val = N->getOperand(0);
-    assert(val != NULL && "mcsema_real_eip metadata not populated"); 
+    Value *address  = N->getOperand(0);
+    Value *inst_rep = N->getOperand(1); 
+    ConstantInt *ca = dyn_cast<ConstantInt>(address);
+    ConstantDataSequential *ci = dyn_cast<ConstantDataSequential>(inst_rep);
+
+    assert(( ca != NULL)  && "mcsema_real_eip metadata not populated"); 
+    assert(( ci != NULL )  && "mcsema_real_eip 2 metadata not populated"); 
 
     std::stringstream ss;
-    if (ConstantInt *ci = dyn_cast<ConstantInt>(val)) {
-        uint64_t val = ci->getLimitedValue();
-        ss  << std::hex << val ;
-    }
+    uint64_t val = ca->getLimitedValue();
+    StringRef str = ci->getAsCString();
+    ss  << std::setw (10) << std::hex << "<" << val << ">" << str.str();
     return ss.str();
   } else {
     NumNotFoundSrc++;
@@ -96,9 +103,9 @@ void SourceLineMappingPass::mapOneFunction(Function *F, raw_ostream &Output) {
 
   int instCount = 0;
   for (inst_iterator I = inst_begin(F); I != inst_end(F); ++I) {
-    Output << ++instCount << " :  ";
+    Output << ++instCount <<  " : ";
     I->print(Output);
-    Output << ": ";
+    Output << " : ";
     Output << locateSrcInfo(&*I);
     Output << "\n";
   }
