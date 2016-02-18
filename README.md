@@ -16,7 +16,7 @@ place where an assert is in the code).
     * `opt -load=LVMSlicer.so  -srcline-mapping -mapping-function=sub_8048420 -mapping-output=mapping.txt  simple.bc -o simple.analysed.bc` 
       * sub_8048420: The function we want to focus on.
       * mapping.txt: The Output file with mapping. If not spediced the output will be dumed in stdout
-  -  From the previous mapping, choose a line number (say N) of the llvm-ir to be selected as the slicing criteria. **[Not Complete: Under Progress]
+  -  From the previous mapping, choose a line number (say N) of the llvm-ir to be selected as the slicing criteria. __Not Complete: Under Progress__
     * `opt -load=LLVMSlicer.so  -mapping-function=sub_8048420 -criterion-line=N -create-hammock-cfg -slice-inter  example2.bc  -o example2.sliced.bc`
       * If -mapping-function and -criterion-line are omitted, the slicing criteria will be selected as an assert (if available).
 
