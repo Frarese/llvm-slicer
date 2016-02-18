@@ -1,15 +1,16 @@
-LLVM slicer
------------
-
-Introduction
-============
+###LLVM slicer
 This is a static slicer based on the Mark Weiser's algorithm in [1]. It is
 augmented to perform an inter-procedural analysis. The initial criteria
 considered here are all assert_fail function calls (which is effectively every
 place where an assert is in the code).
 
-HOWTO
-=====
+### How To Build
+  - `mkdir LLVMSlicer.obj`
+  - `cd !$`
+  - `cmake   -DCMAKE_C_COMPILER=/software/gcc-4.8.2/bin/gcc -DCMAKE_CXX_COMPILER=/software/gcc-4.8.2/bin/g++ ../LLVMSlicer`
+  - `cmake -build`
+
+###How To Run
 Basically, what one needs to do to slice src.o LLVM code into dst.o is:
   $ opt -load LLVMSlicer.so -create-hammock-cfg -slice-inter src.o -o dst.o
 
