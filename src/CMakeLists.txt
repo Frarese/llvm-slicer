@@ -1,14 +1,16 @@
-set(LLVM_LINK_COMPONENTS core engine bitwriter)
+#set(LLVM_LINK_COMPONENTS core engine bitwriter)
 
 add_llvm_loadable_module(LLVMSlicer
 	Kleerer.cpp
 	ModStats.cpp
 	Slicing/FunctionStaticSlicer.cpp
 	Slicing/PostDominanceFrontier.cpp
+	Slicing/CreateHammockCFG.cpp
 	Slicing/Prepare.cpp
 	Slicing/StaticSlicer.cpp
 	Callgraph/Callgraph.cpp
 	Languages/LLVM.cpp
 	Modifies/Modifies.cpp
 	PointsTo/PointsTo.cpp
+	DebugInfo/SourceLineMapping.cpp
 )
