@@ -9,56 +9,33 @@
 #include "llvm/IR/Instructions.h"
 #include "llvm/Pass.h"
 
-#include "llvm/Transforms/Utils/BasicBlockUtils.h"
 
 #include "PostDominanceFrontier.h"
 
 using namespace llvm;
 
-static RegisterPass<CreateHammockCFG> Y("create-hammock-cfg",
-		"Creates Hammock Graph from Control Flow Graph");
-char CreateHammockCFG::ID = 0;
+static RegisterPass<PostDominanceFrontier> X1("pdf-frontier", "Computes postdom frontiers");
+char PostDominanceFrontier::ID = 0;
 
-bool CreateHammockCFG::runOnFunction(Function &F) {
-  if (F.front().getName() == "start")
-	  return false;
-
-  LoopInfo &LI = getAnalysis<LoopInfo>();
-  LLVMContext &ctx = F.getContext();
-  Function::BasicBlockListType &BBL = F.getBasicBlockList();
-  ConstantInt *Ctrue = ConstantInt::getTrue(ctx);
-  BasicBlock &entry = BBL.front();
-
-  BasicBlock *BBend = BasicBlock::Create(ctx, "end", &F);
-  new UnreachableInst(ctx, BBend);
-
-  BasicBlock *BBstart = BasicBlock::Create(ctx, "start", &F, &entry);
-  BranchInst::Create(&entry, BBend, Ctrue, BBstart);
-
-  for (Function::iterator I = BBL.begin(), E = BBL.end(); I != E; ++I) {
-    BasicBlock *BB = I;
-    if (LI.isLoopHeader(BB)) {
-      BasicBlock *BBLoopBody = BB->splitBasicBlock(BB->begin(), "body");
-      ReplaceInstWithInst(&BB->back(),
-		      BranchInst::Create(BBLoopBody, BBend, Ctrue));
-    }
-    if (BB == BBend)
-      continue;
-    if (UnreachableInst *UI =
-	llvm::dyn_cast<UnreachableInst>(BB->getTerminator())) {
-      ReplaceInstWithInst(UI, BranchInst::Create(BBend));
-    }
+bool PostDominanceFrontier::runOnFunction(Function &F) {
+  Frontiers.clear();
+  PostDominatorTree &DT = getAnalysis<PostDominatorTree>();
+#ifdef CONTROL_DEPENDENCE_GRAPH
+  calculate(DT, F);
+#else
+  Roots = DT.getRoots();
+  if (const DomTreeNode *Root = DT.getRootNode()) {
+    calculate(DT, Root);
+#ifdef PDF_DUMP
+    errs() << "=== DUMP:\n";
+    dump();
+    errs() << "=== EOD\n";
+#endif
   }
-
-  return true;
+#endif
+  return false;
 }
 
-//===----------------------------------------------------------------------===//
-//  PostDominanceFrontier Implementation
-//===----------------------------------------------------------------------===//
-
-static RegisterPass<PostDominanceFrontier> X("postdom-frontier", "Computes postdom frontiers");
-char PostDominanceFrontier::ID = 0;
 
 #ifdef CONTROL_DEPENDENCE_GRAPH
 void PostDominanceFrontier::constructS(const PostDominatorTree &DT,
@@ -80,7 +57,7 @@ void PostDominanceFrontier::constructS(const PostDominatorTree &DT,
  * Changed to return a path from LCA to B and optimized.
  */
 const DomTreeNode *
-PostDominanceFrontier::findNearestCommonDominator(const PostDominatorTree &DT,
+PostDominanceFrontier::findNearestCommonDominator2(const PostDominatorTree &DT,
 		DomTreeNode *A, DomTreeNode *B) {
   BasicBlock *BB = A->getBlock();
   assert(BB);
@@ -114,19 +91,19 @@ PostDominanceFrontier::calculate(const PostDominatorTree &DT, Function &F) {
   for (Stype::const_iterator I = S.begin(), E = S.end(); I != E; ++I) {
     DomTreeNode *mNode = I->first;
     DomTreeNode *nNode = I->second;
-    findNearestCommonDominator(DT, mNode, nNode);
+    findNearestCommonDominator2(DT, mNode, nNode);
   }
 }
 
 #else /* CONTROL_DEPENDENCE_GRAPH */
 
-const DominanceFrontier::DomSetType &
+const PostDominanceFrontier::DomSetType &
 PostDominanceFrontier::calculate(const PostDominatorTree &DT,
                                  const DomTreeNode *Node) {
   // Loop over CFG successors to calculate DFlocal[Node]
   BasicBlock *BB = Node->getBlock();
   DomSetType &S = Frontiers[BB];       // The new set to fill in...
-  if (getRoots().empty()) return S;
+  if (Roots.empty()) return S;
 
   if (BB)
     for (pred_iterator SI = pred_begin(BB), SE = pred_end(BB);
