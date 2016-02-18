@@ -34,7 +34,7 @@ using namespace llvm;
 //===----------------------------------------------------------------------===//
 //                          Command line options
 //===----------------------------------------------------------------------===//
-static cl::opt<std::string>
+cl::opt<std::string>
 FunctionName("mapping-function",
              cl::desc("The function name to be mapped"),
              cl::init(""));
@@ -75,13 +75,16 @@ std::string SourceLineMappingPass::locateSrcInfo(Instruction *I) {
     ConstantInt *ca = dyn_cast<ConstantInt>(address);
     ConstantDataSequential *ci = dyn_cast<ConstantDataSequential>(inst_rep);
 
-    assert(( ca != NULL)  && "mcsema_real_eip metadata not populated"); 
-    assert(( ci != NULL )  && "mcsema_real_eip 2 metadata not populated"); 
+    assert( ca != NULL  && "mcsema_real_eip metadata not populated"); 
 
     std::stringstream ss;
     uint64_t val = ca->getLimitedValue();
-    StringRef str = ci->getAsCString();
-    ss  << std::setw (10) << std::hex << "<" << val << ">" << str.str();
+    ss  << std::setw (10) << std::hex << "<" << val << ">" ;
+
+    if(NULL != ci) {
+      StringRef str = ci->getAsCString();
+      ss  << str.str();
+    }
     return ss.str();
   } else {
     NumNotFoundSrc++;
