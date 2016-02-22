@@ -7,8 +7,8 @@ place where an assert is in the code).
 ### How To Build
   - `mkdir LLVMSlicer.obj`
   - `cd !$`
-  - `cmake   -DCMAKE_C_COMPILER=/software/gcc-4.8.2/bin/gcc -DCMAKE_CXX_COMPILER=/software/gcc-4.8.2/bin/g++ ../LLVMSlicer`
-  - `cmake -build`
+  - `../LLVMSlicer/configure --with-llvmsrc=<> --with-llvmobj=<>
+  - `make`
 
 ###How To Run
   - To get a mapping of binary to llvm-ir. This pass numbers the llvm-irs in a specific function (-mapping-function) and for each of them specifies the info of the corresponding binary mneumonics. This analysis pass used the metadata add by mcsema to infer this mapping.
