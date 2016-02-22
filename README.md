@@ -12,16 +12,17 @@ place where an assert is in the code).
 
 ###How To Run
   - To get a mapping of binary to llvm-ir. This pass numbers the llvm-irs in a specific function (-mapping-function) and for each of them specifies the info of the corresponding binary mneumonics. This analysis pass used the metadata add by mcsema to infer this mapping.
-    * `opt -load=LVMSlicer.so  -srcline-mapping -mapping-function=sub_8048420 -mapping-output=mapping.txt  simple.bc -o simple.analysed.bc` 
-      * sub_8048420: The function we want to focus on.
-      * mapping.txt: The Output file with mapping. If not specifed the output will be dumped in stdout
-  -  From the previous mapping, choose a line number (say N) of the llvm-ir to be selected as the static slicing criteria. __Not Complete: Under Progress__
-    * `opt -load=LLVMSlicer.so  -mapping-function=sub_8048420 -criterion-line=N -create-hammock-cfg -slice-inter  example2.bc  -o example2.sliced.bc`
-      * If -mapping-function and -criterion-line are omitted, the slicing criteria will be selected as an assert (if available).
+    * Eg. `opt -load=LVMSlicer.so  -srcline-mapping -mapping-function=main -mapping-output=mapping.txt  example1.ll -o example1.analysed.bc` 
+    * Eg. `opt -load=LVMSlicer.so  -srcline-mapping -mapping-function=sub_8048420 -mapping-output=mapping.txt  example2.bc -o example2.analysed.bc` 
+      * -mapping-function: The function we want to focus on.
+      * -mapping-output: The Output file with mapping. If not specifed the output will be dumped in stdout
+  -  To obtain backward slicing using a function, line number of llvm-ir and variable name as slicing criterion. 
+      * The line number (specified as -criterion-line) can be chosen using the above mapping, as it specifies the line numbers of the llvm-ir.
+      * Eg. `opt -load=LLVMSlicer.so  -criterion-function=main -criterion-line=43 -criterion-variable=product  -slice-inter  example1.ll  -o example1.sliced.bc`
+      * Eg. `opt -load=LLVMSlicer.so  -criterion-function=sub_8048420 -criterion-line=256 -criterion-variable=ESP_val  -slice-inter  example2.ll  -o example2.sliced.bc`
 
 
 
 ###Acknowledgement
-This worked is borrowed from 
-Jiri Slaby <jirislaby@gmail.com>
-https://github.com/jirislaby/LLVMSlicer
+- This worked is borrowed from Jiri Slaby <jirislaby@gmail.com>
+  * https://github.com/jirislaby/LLVMSlicer
