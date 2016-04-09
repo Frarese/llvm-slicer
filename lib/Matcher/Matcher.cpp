@@ -404,7 +404,8 @@ MDNode *Matcher::getFunctionMD(const Function *F) {
   // simply look all subprograms
   if (!processed) // must process the module to build up the debug information
     return NULL;
-  for (DebugInfoFinder::iterator i = Finder.subprogram_begin(), e = Finder.subprogram_end();
+  //for (DebugInfoFinder::iterator i = Finder.subprogram_begin(), e = Finder.subprogram_end();
+  for (DebugInfoFinder::subprogram_iterator i = Finder.subprograms().begin(), e = Finder.subprograms().end();
       i != e; ++i) {
     DISubprogram S(*i);
     if (S.getFunction() == F)

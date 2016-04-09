@@ -28,10 +28,10 @@ namespace llvm {
   /// PostDominanceFrontier Class - Concrete subclass of DominanceFrontier that is
   /// used to compute the a post-dominance frontier.
   ///
-  struct PostDominanceFrontier : public DominanceFrontierBase {
+  struct PostDominanceFrontier : public DominanceFrontierBase<BasicBlock>, public FunctionPass {
     static char ID;
     PostDominanceFrontier()
-      : DominanceFrontierBase(ID, true) { }
+      : DominanceFrontierBase(true), FunctionPass(ID)  { }
 
     virtual bool runOnFunction(Function &F) {
       Frontiers.clear();

@@ -168,7 +168,8 @@ namespace llvm { namespace slicing {
       if (!returnAffected) 
         return;
       FuncsToCalls::const_iterator c, e;
-      llvm::tie(c,e) = funcsToCalls.equal_range(f);
+      //llvm::tie(c,e) = funcsToCalls.equal_range(f);
+      tie(c,e) = funcsToCalls.equal_range(f);
       for ( ; c != e; ++c) {
         const llvm::CallInst *CI = c->second;
         // if a call is void call
@@ -203,7 +204,8 @@ namespace llvm { namespace slicing {
       const ValSet::const_iterator relEnd =
         fss->relevant_end(getFunctionEntry(f));
       FuncsToCalls::const_iterator c, e;
-      llvm::tie(c,e) = funcsToCalls.equal_range(f);
+      //llvm::tie(c,e) = funcsToCalls.equal_range(f);
+      tie(c,e) = funcsToCalls.equal_range(f);
       for ( ; c != e; ++c) {
         const llvm::CallInst *CI = c->second;
         const llvm::Function *g = CI->getParent()->getParent();
@@ -246,7 +248,8 @@ namespace llvm { namespace slicing {
           continue;
         }
         CallsToFuncs::const_iterator g, e;
-        llvm::tie(g, e) = callsToFuncs.equal_range(*c);
+        //llvm::tie(g, e) = callsToFuncs.equal_range(*c);
+        tie(g, e) = callsToFuncs.equal_range(*c);
         for ( ; g != e; ++g) {
           const Function *callee = g->second;
           FunctionStaticSlicer * FSS = getFSS(callee);
@@ -325,7 +328,8 @@ namespace llvm { namespace slicing {
           fss->relevant_end(getSuccInBlock(*c));
         CallsToFuncs::const_iterator g, e;
         // each call instruction might have multiple possible targets
-        llvm::tie(g, e) = callsToFuncs.equal_range(*c);
+        //llvm::tie(g, e) = callsToFuncs.equal_range(*c);
+        tie(g, e) = callsToFuncs.equal_range(*c);
         for ( ; g != e; ++g) {
           // for each possible callee
           typedef std::vector<const llvm::ReturnInst *> ExitsVec;

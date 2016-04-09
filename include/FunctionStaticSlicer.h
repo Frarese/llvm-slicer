@@ -9,7 +9,7 @@
 #include "llvm/IR/Value.h"
 #include "llvm/IR/IntrinsicInst.h"
 #include "llvm/ADT/SetVector.h"
-#include "llvm/Support/InstIterator.h"
+#include "llvm/IR/InstIterator.h"
 
 #include "PointsTo.h"
 #include "Matcher.h"
