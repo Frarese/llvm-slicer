@@ -5,8 +5,8 @@ augmented to perform an inter-procedural analysis.
 ### How To Build
   - `mkdir LLVMSlicer.obj`
   - `cd !$`
-  - `../LLVMSlicer/configure --with-llvmsrc=<> --with-llvmobj=<>
-  - `make`
+  - `CC=gcc CXX=g++ ../LLVMSlicer/configure --with-llvmsrc=<> --with-llvmobj=<>
+  - `CXXFLAGS+=-std=c++11 make ENABLE_OPTIMIZED=1`
 
 ###How To Run
   - To get a mapping of binary to llvm-ir. This pass numbers the llvm-irs in a specific function (-mapping-function) and for each of them specifies the info of the corresponding binary mneumonics. This analysis pass used the metadata add by mcsema to infer this mapping.
