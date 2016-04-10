@@ -106,12 +106,19 @@ void SourceLineMappingPass::mapOneFunction(Function *F, raw_ostream &Output) {
   Output << "========================================================\n";
 
   int instCount = 0;
+  std::string prev_info("");
+  std::string curr_info("");
   for (inst_iterator I = inst_begin(F); I != inst_end(F); ++I) {
+    curr_info = locateSrcInfo(&*I);
+    if(0 != curr_info.compare(prev_info)) {
+      Output << "\n";
+    }
+
     Output << ++instCount <<  " : ";
     I->print(Output);
     Output << " : ";
-    Output << locateSrcInfo(&*I);
-    Output << "\n";
+    Output << curr_info << "\n";;
+    prev_info = curr_info;
   }
 }
 
